@@ -4,6 +4,18 @@
 
 #include <cstdint>
 
+#define BLOCK_DIM 1024
+
+__global__ void print_array(float *input, int size)
+{
+    printf("MATRIX = [\n");
+    for (int i = 0; i < size; ++i)
+    {
+        printf("%f ", input[i]);
+    }
+    printf("]\n");
+}
+
 template <typename _Type> _Type host_reduction(_Type *input, uint64_t size)
 {
     _Type output = 0;
@@ -27,17 +39,41 @@ template <typename _Type> _Type host_openmp_reduction(_Type *input, uint64_t siz
 
 template <typename _Type> __global__ void reduce_kernel1(_Type *output, _Type *input, uint64_t size)
 {
-	_Type sum = 0;
-	for (uint64_t i = 0; i < size; ++i) 
-		sum += input[i];
-	
-	*output = sum;
+    _Type sum = 0;
+    for (uint64_t i = 0; i < size; ++i)
+        sum += input[i];
+
+    *output = sum;
 }
 
 template <typename _Type> __global__ void reduce_kernel2(_Type *output, _Type *input, uint64_t size)
 {
-	uint64_t i = blockIdx.x * blockDim.x + threadIdx.x;
+    uint64_t i = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (i < size)
-		atomicAdd(output, input[i]);
+    if (i < size)
+        atomicAdd(output, input[i]);
+}
+
+template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *input, uint64_t size)
+{
+    unsigned int segment = 2 * blockDim.x * blockIdx.x;
+    unsigned int i = segment + 2 * threadIdx.x;
+
+    if (i < size)
+    {
+        for (unsigned int stride = 1; stride <= blockDim.x; stride *= 2)
+        {
+            if (threadIdx.x % stride == 0)
+            {
+                input[i] += input[i + stride];
+            }
+            __syncthreads();
+        }
+
+        if (i % segment == 0 && i > 0)
+        {
+            atomicAdd(&input[0], input[i]);
+            input[i] = 1;
+        }
+    }
 }
