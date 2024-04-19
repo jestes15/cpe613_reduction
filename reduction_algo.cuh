@@ -73,7 +73,35 @@ template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *i
         if (i % segment == 0 && i > 0)
         {
             atomicAdd(&input[0], input[i]);
-            input[i] = 1;
         }
     }
+
+    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
+        *output = input[0];
+}
+
+template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *input, uint64_t size)
+{
+    unsigned int segment = 2 * blockDim.x * blockIdx.x;
+    unsigned int i = segment + threadIdx.x;
+
+    if (i < size)
+    {
+        for (unsigned int stride = blockDim.x; stride > 0; stride /= 2)
+        {
+            if (threadIdx.x < stride)
+            {
+                input[i] += input[i + stride];
+            }
+
+            __syncthreads();
+        }
+
+        if (i % segment == 0 && i > 0)
+        {
+            atomicAdd(&input[0], input[i]);
+        }
+    }
+    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
+        *output = input[0];
 }
