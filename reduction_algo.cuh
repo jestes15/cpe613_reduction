@@ -74,10 +74,9 @@ template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *i
         {
             atomicAdd(&input[0], input[i]);
         }
-    }
 
-    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
         *output = input[0];
+    }
 }
 
 template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *input, uint64_t size)
@@ -101,7 +100,7 @@ template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *i
         {
             atomicAdd(&input[0], input[i]);
         }
-    }
-    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
+
         *output = input[0];
+    }
 }
