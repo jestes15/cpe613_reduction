@@ -1,0 +1,330 @@
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005550
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.012300
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.008917
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.009304
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.008961
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.009032
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.009046
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005011
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.008953
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.007061
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.008549
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005168
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004675
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004679
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1018.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.007627
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1020.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.003511
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.006191
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005297
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.007585
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005832
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004746
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004868
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004791
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1018.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.007639
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005389
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000001
+Result of threaded host code is: 1024.000000
+Time to compute: 0.007205
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1024.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.006671
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1016.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000001
+Result of threaded host code is: 1024.000000
+Time to compute: 0.004348
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1018.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005594
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
+Memory Usage: 0.000004 GB
+-------------------------------------------------------------------------
+Result of no threaded host code is: 1024.000000
+Time to compute: 0.000000
+Result of threaded host code is: 1024.000000
+Time to compute: 0.005688
+Result of cub code is: 1024.000000
+Result of kernel 1 code is: 1024.000000
+Result of kernel 2 host code is: 1024.000000
+Result of kernel 3 host code is: 1024.000000
+Result of kernel 4 host code is: 1022.000000
