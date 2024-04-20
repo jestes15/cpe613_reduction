@@ -54,6 +54,14 @@ template <typename _Type> __global__ void reduce_kernel2(_Type *output, _Type *i
         atomicAdd(output, input[i]);
 }
 
+template <typename _Type> __device__ void print(_Type arr, uint64_t size)
+{
+    printf("[ ");
+    for (int i = 0; i < size; ++i)
+        printf("%g ", arr[i]);
+    printf("]\n");
+}
+
 template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *input, uint64_t size)
 {
     unsigned int segment = 2 * blockDim.x * blockIdx.x;
@@ -68,16 +76,20 @@ template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *i
                 input[i] += input[i + stride];
             }
             __syncthreads();
+
+            if (i == 0)
+                print(input, size);
+
+            __syncthreads();
         }
 
         if (i % segment == 0 && i > 0)
         {
             atomicAdd(&input[0], input[i]);
         }
-    }
 
-    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
-        *output = input[0];
+        output[0] = input[0];
+    }
 }
 
 template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *input, uint64_t size)
@@ -102,6 +114,5 @@ template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *i
             atomicAdd(&input[0], input[i]);
         }
     }
-    if (blockIdx.x * blockDim.x + threadIdx.x == 0)
-        *output = input[0];
+    *output = input[0];
 }

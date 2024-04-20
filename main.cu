@@ -9,7 +9,7 @@ int main()
 {
     // uint64_t size = (uint64_t)2 << (uint64_t)29;
 
-    uint64_t size = 8;
+    uint64_t size = 1024;
     using datatype = float;
 
     datatype *input_array = (datatype *)malloc(sizeof(datatype) * size);
@@ -41,7 +41,7 @@ int main()
     cudaMalloc((void **)&d_input, sizeof(datatype) * size);
     cudaMalloc((void **)&d_output_kernel1, sizeof(datatype));
     cudaMalloc((void **)&d_output_kernel2, sizeof(datatype));
-    cudaMalloc((void **)&d_output_kernel3, sizeof(datatype));
+    cudaMalloc((void **)&d_output_kernel3, sizeof(datatype) * size);
     cudaMalloc((void **)&d_output_kernel4, sizeof(datatype));
 
     cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
@@ -53,12 +53,14 @@ int main()
     reduce_kernel1<<<1, 1>>>(d_output_kernel1, d_input, size);
     cudaMemcpy(&ouput_kernel1, d_output_kernel1, sizeof(datatype), cudaMemcpyDeviceToHost);
     cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
+    std::cout << "Result of kernel 1 code is: " << ouput_kernel1 << std::endl;
 
     dim3 block_kernel2(1024, 1);
     dim3 grid_kernel2((size + block_kernel2.x - 1) / block_kernel2.x);
     reduce_kernel2<<<block_kernel2, grid_kernel2>>>(d_output_kernel2, d_input, size);
     cudaMemcpy(&ouput_kernel2, d_output_kernel2, sizeof(datatype), cudaMemcpyDeviceToHost);
     cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
+    std::cout << "Result of kernel 2 host code is: " << ouput_kernel2 << std::endl;
 
     dim3 block_kernel3(1024, 1);
     dim3 grid_kernel3((size + block_kernel3.x - 1) / block_kernel3.x);
@@ -66,15 +68,18 @@ int main()
     cudaMemcpy(&ouput_kernel3, d_output_kernel3, sizeof(datatype), cudaMemcpyDeviceToHost);
     cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
 
-    dim3 block_kernel4(1024, 1);
-    dim3 grid_kernel4((size + block_kernel3.x - 1) / block_kernel3.x);
+    if (abs(ouput_kernel3 - (float)size) > 0.001)
+    {
+        std::cout << "Result of kernel 3 host code is: " << ouput_kernel3 << std::endl;
+        printf("FAILURE\n");
+		exit(1);
+    }
+
+        dim3 block_kernel4(1024, 1);
+    dim3 grid_kernel4((size + block_kernel4.x - 1) / block_kernel4.x);
     reduce_kernel4<<<block_kernel4, grid_kernel4>>>(d_output_kernel4, d_input, size);
     cudaMemcpy(&ouput_kernel4, d_output_kernel4, sizeof(datatype), cudaMemcpyDeviceToHost);
     cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
-
-    std::cout << "Result of kernel 1 code is: " << ouput_kernel1 << std::endl;
-    std::cout << "Result of kernel 2 host code is: " << ouput_kernel2 << std::endl;
-    std::cout << "Result of kernel 3 host code is: " << ouput_kernel3 << std::endl;
     std::cout << "Result of kernel 4 host code is: " << ouput_kernel4 << std::endl;
 
     free(input_array);

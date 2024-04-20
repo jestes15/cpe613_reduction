@@ -1,5 +1,5 @@
 ada:
-	nvcc -g  main.cu -o main -arch=sm_89 -Xcompiler '-fopenmp'
+	nvcc -O3 main.cu -o main -arch=sm_89 -Xcompiler '-fopenmp'
 
 xavier:
 	/usr/local/cuda-11/bin/nvcc -g  main.cu -o main -arch=sm_72 -Xcompiler '-fopenmp'
