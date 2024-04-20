@@ -191,5 +191,3 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size)
         output[0] += input_s[0];
     }
 }
-
-template <typename _Type> __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size);
