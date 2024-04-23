@@ -130,7 +130,7 @@ int main()
         block_kernel6 = 1024;
         grid_kernel6 = (size + block_kernel6 - 1) / block_kernel6;
 
-        for (int course_factor = 1; course_factor < 128; ++course_factor)
+        for (int course_factor = 1; course_factor < 64; ++course_factor)
         {
             cudaEventRecord(start);
             reduce_kernel6<datatype><<<grid_kernel6, block_kernel6>>>(d_output_kernel6, d_input, size, course_factor);

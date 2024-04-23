@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-const uint64_t blockdim = 1024;
+#define BLOCK_DIM 1024
 
 template <typename _Type> _Type host_reduction(_Type *input, uint64_t size)
 {
@@ -139,7 +139,7 @@ template <typename _Type> __global__ void reduce_kernel5(_Type *output, _Type *i
     uint64_t segment = 2 * blockDim.x * blockIdx.x;
     uint64_t i = segment + threadIdx.x;
 
-    __shared__ _Type input_s[blockdim];
+    __shared__ _Type input_s[BLOCK_DIM];
 
     if (i < size)
     {
@@ -157,7 +157,7 @@ template <typename _Type> __global__ void reduce_kernel5(_Type *output, _Type *i
 
     for (uint64_t stride = blockDim.x / 2; stride > 0; stride /= 2)
     {
-        if (threadIdx.x < stride && threadIdx.x + stride < blockdim)
+        if (threadIdx.x < stride && threadIdx.x + stride < blockDim.x)
         {
             input_s[threadIdx.x] += input_s[threadIdx.x + stride];
         }
@@ -175,7 +175,6 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
 {
     unsigned int segment = coarse_factor * 2 * blockDim.x * blockIdx.x;
     unsigned int i = segment + threadIdx.x;
-    const unsigned int BLOCK_DIM = blockdim >> 1;
 
     __shared__ _Type input_s[BLOCK_DIM];
 
@@ -186,6 +185,8 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
     else
         sum = 0;
 
+    __syncthreads();
+
     for (unsigned int tile = 1; tile < coarse_factor * 2; ++tile)
     {
         if (i + tile * BLOCK_DIM < size)
@@ -193,6 +194,8 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
             sum += input[i + tile * BLOCK_DIM];
         }
     }
+
+    __syncthreads();
     if (threadIdx.x < BLOCK_DIM)
         input_s[threadIdx.x] = sum;
 
@@ -204,6 +207,8 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
             input_s[threadIdx.x] += input_s[threadIdx.x + stride];
         }
     }
+
+    __syncthreads();
 
     if (threadIdx.x == 0)
     {
