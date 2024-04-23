@@ -11,49 +11,13 @@ template <typename datatype> void print_data(const char *kernel_name, datatype r
         printf("%s: %f, %f ms\n", kernel_name, result, time);
     else if constexpr (std::is_same<double, datatype>::value)
         printf("%s: %f, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint8_t, datatype>::value)
-        printf("%s: %hhu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int8_t, datatype>::value)
-        printf("%s: %hhd, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint16_t, datatype>::value)
-        printf("%s: %hu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int16_t, datatype>::value)
-        printf("%s: %hd, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint32_t, datatype>::value)
-        printf("%s: %u, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int32_t, datatype>::value)
-        printf("%s: %d, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint64_t, datatype>::value)
-        printf("%s: %lu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int64_t, datatype>::value)
-        printf("%s: %ld, %f ms\n", kernel_name, result, time);
 }
 
 template <typename datatype> int get_max_test_shift()
 {
     if constexpr (std::is_same<float, datatype>::value)
-        return 20;
+        return 30;
     else if constexpr (std::is_same<double, datatype>::value)
-        return 27;
-    else if constexpr (std::is_same<uint8_t, datatype>::value)
-        return 8;
-    else if constexpr (std::is_same<int8_t, datatype>::value)
-        return 7;
-    else if constexpr (std::is_same<uint16_t, datatype>::value)
-        return 16;
-    else if constexpr (std::is_same<int16_t, datatype>::value)
-        return 15;
-    else if constexpr (std::is_same<uint32_t, datatype>::value)
-        return 32;
-    else if constexpr (std::is_same<int32_t, datatype>::value)
-        return 30;
-    else if constexpr (std::is_same<uint64_t, datatype>::value)
-        return 30;
-    else if constexpr (std::is_same<int64_t, datatype>::value)
         return 30;
 }
 
@@ -63,14 +27,6 @@ template <typename datatype> void run_tests()
         printf("SINGLE PRECISION TESTING\n");
     else if constexpr (std::is_same<double, datatype>::value)
         printf("DOUBLE PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint8_t, datatype>::value || std::is_same<int8_t, datatype>::value)
-        printf("8-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint16_t, datatype>::value || std::is_same<int16_t, datatype>::value)
-        printf("16-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint32_t, datatype>::value || std::is_same<int32_t, datatype>::value)
-        printf("32-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint64_t, datatype>::value || std::is_same<int64_t, datatype>::value)
-        printf("64-BIT PRECISION TESTING\n");
 
     float milliseconds = 0;
 
@@ -80,7 +36,7 @@ template <typename datatype> void run_tests()
     int block_kernel5, grid_kernel5;
     int block_kernel6, grid_kernel6;
 
-	std::vector<std::pair<uint64_t, float>> time_kernel1;
+    std::vector<std::pair<uint64_t, float>> time_kernel1;
     std::vector<std::pair<uint64_t, float>> time_kernel2;
     std::vector<std::pair<uint64_t, float>> time_kernel3;
     std::vector<std::pair<uint64_t, float>> time_kernel4;
