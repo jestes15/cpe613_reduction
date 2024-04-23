@@ -5,55 +5,19 @@
 #include <iomanip>
 #include <iostream>
 
-template <typename datatype> void print_data(const char *kernel_name, datatype result, float time)
+template <typename datatype> void print_data(int size, const char *kernel_name, datatype result, float time)
 {
     if constexpr (std::is_same<float, datatype>::value)
-        printf("%s: %f, %f ms\n", kernel_name, result, time);
+        printf("%s: %d, %f, %f ms\n", kernel_name, size, result, time);
     else if constexpr (std::is_same<double, datatype>::value)
-        printf("%s: %f, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint8_t, datatype>::value)
-        printf("%s: %hhu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int8_t, datatype>::value)
-        printf("%s: %hhd, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint16_t, datatype>::value)
-        printf("%s: %hu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int16_t, datatype>::value)
-        printf("%s: %hd, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint32_t, datatype>::value)
-        printf("%s: %u, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int32_t, datatype>::value)
-        printf("%s: %d, %f ms\n", kernel_name, result, time);
-
-    else if constexpr (std::is_same<uint64_t, datatype>::value)
-        printf("%s: %lu, %f ms\n", kernel_name, result, time);
-    else if constexpr (std::is_same<int64_t, datatype>::value)
-        printf("%s: %ld, %f ms\n", kernel_name, result, time);
+        printf("%s: %d, %f, %f ms\n", kernel_name, size, result, time);
 }
 
 template <typename datatype> int get_max_test_shift()
 {
     if constexpr (std::is_same<float, datatype>::value)
-        return 20;
+        return 30;
     else if constexpr (std::is_same<double, datatype>::value)
-        return 27;
-    else if constexpr (std::is_same<uint8_t, datatype>::value)
-        return 8;
-    else if constexpr (std::is_same<int8_t, datatype>::value)
-        return 7;
-    else if constexpr (std::is_same<uint16_t, datatype>::value)
-        return 16;
-    else if constexpr (std::is_same<int16_t, datatype>::value)
-        return 15;
-    else if constexpr (std::is_same<uint32_t, datatype>::value)
-        return 32;
-    else if constexpr (std::is_same<int32_t, datatype>::value)
-        return 30;
-    else if constexpr (std::is_same<uint64_t, datatype>::value)
-        return 30;
-    else if constexpr (std::is_same<int64_t, datatype>::value)
         return 30;
 }
 
@@ -63,14 +27,6 @@ template <typename datatype> void run_tests()
         printf("SINGLE PRECISION TESTING\n");
     else if constexpr (std::is_same<double, datatype>::value)
         printf("DOUBLE PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint8_t, datatype>::value || std::is_same<int8_t, datatype>::value)
-        printf("8-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint16_t, datatype>::value || std::is_same<int16_t, datatype>::value)
-        printf("16-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint32_t, datatype>::value || std::is_same<int32_t, datatype>::value)
-        printf("32-BIT PRECISION TESTING\n");
-    else if constexpr (std::is_same<uint64_t, datatype>::value || std::is_same<int64_t, datatype>::value)
-        printf("64-BIT PRECISION TESTING\n");
 
     float milliseconds = 0;
 
@@ -80,7 +36,7 @@ template <typename datatype> void run_tests()
     int block_kernel5, grid_kernel5;
     int block_kernel6, grid_kernel6;
 
-	std::vector<std::pair<uint64_t, float>> time_kernel1;
+    std::vector<std::pair<uint64_t, float>> time_kernel1;
     std::vector<std::pair<uint64_t, float>> time_kernel2;
     std::vector<std::pair<uint64_t, float>> time_kernel3;
     std::vector<std::pair<uint64_t, float>> time_kernel4;
@@ -110,7 +66,7 @@ template <typename datatype> void run_tests()
         datatype output_no_threading = host_reduction(input_array, size);
         const auto end_no_threading = std::chrono::steady_clock::now();
         const std::chrono::duration<double> diff_no_threading = end_no_threading - start_no_threading;
-        print_data("NO THREAD", output_no_threading,
+        print_data(size, "NO THREAD", output_no_threading,
                    std::chrono::duration_cast<std::chrono::nanoseconds>(diff_no_threading).count() /
                        static_cast<float>(1e6));
 
@@ -118,7 +74,7 @@ template <typename datatype> void run_tests()
         datatype output_threading = host_openmp_reduction(input_array, size);
         const auto end_threading = std::chrono::steady_clock::now();
         const std::chrono::duration<double> diff_threading = end_threading - start_threading;
-        print_data("THREAD", output_threading,
+        print_data(size, "THREAD", output_threading,
                    std::chrono::duration_cast<std::chrono::nanoseconds>(diff_threading).count() /
                        static_cast<float>(1e6));
 
@@ -153,7 +109,7 @@ template <typename datatype> void run_tests()
         cudaEventSynchronize(stop);
         cudaMemcpy(&output_kernel1, d_output_kernel1, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        print_data("KERNEL 1", output_kernel1, milliseconds);
+        print_data(size, "KERNEL 1", output_kernel1, milliseconds);
 
         block_kernel2 = 1024;
         grid_kernel2 = (size + block_kernel2 - 1) / block_kernel2;
@@ -165,7 +121,7 @@ template <typename datatype> void run_tests()
         cudaMemcpy(&output_kernel2, d_output_kernel2, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        print_data("KERNEL 2", output_kernel2, milliseconds);
+        print_data(size, "KERNEL 2", output_kernel2, milliseconds);
 
         block_kernel3 = 1024;
         grid_kernel3 = (size + block_kernel3 - 1) / block_kernel3;
@@ -177,7 +133,7 @@ template <typename datatype> void run_tests()
         cudaMemcpy(&output_kernel3, d_output_kernel3, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        print_data("KERNEL 3", output_kernel3, milliseconds);
+        print_data(size, "KERNEL 3", output_kernel3, milliseconds);
 
         block_kernel4 = 1024;
         grid_kernel4 = (size + block_kernel4 - 1) / block_kernel4;
@@ -189,7 +145,7 @@ template <typename datatype> void run_tests()
         cudaMemcpy(&output_kernel4, d_output_kernel4, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        print_data("KERNEL 4", output_kernel4, milliseconds);
+        print_data(size, "KERNEL 4", output_kernel4, milliseconds);
 
         block_kernel5 = 1024;
         grid_kernel5 = (size + block_kernel5 - 1) / block_kernel5;
@@ -201,7 +157,7 @@ template <typename datatype> void run_tests()
         cudaMemcpy(&output_kernel5, d_output_kernel5, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        print_data("KERNEL 5", output_kernel5, milliseconds);
+        print_data(size, "KERNEL 5", output_kernel5, milliseconds);
 
         block_kernel6 = 1024;
         grid_kernel6 = (size + block_kernel6 - 1) / block_kernel6;
@@ -216,17 +172,17 @@ template <typename datatype> void run_tests()
             cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
             cudaEventElapsedTime(&milliseconds, start, stop);
             cudaMemcpy(d_output_kernel6, &zero, sizeof(datatype), cudaMemcpyHostToDevice);
-            print_data("KERNEL 6", output_kernel6, milliseconds);
+            print_data(size, "KERNEL 6", output_kernel6, milliseconds);
         }
 
         auto cub_time = run_cub_reduce(d_cub_output, d_input, size);
         cudaMemcpy(&cub_output, d_cub_output, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
-        print_data("CUB::REDUCE", cub_output, cub_time);
+        print_data(size, "CUB::REDUCE", cub_output, cub_time);
 
         auto thrust_time = run_thrust_reduce(d_thrust_output, d_input, size);
         cudaMemcpy(&thrust_output, d_thrust_output, sizeof(datatype), cudaMemcpyDeviceToHost);
-        print_data("THRUST::REDUCE", thrust_output, thrust_time);
+        print_data(size, "THRUST::REDUCE", thrust_output, thrust_time);
 
         free(input_array);
 
