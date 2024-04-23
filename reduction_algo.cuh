@@ -1,20 +1,12 @@
 #include <cub/cub.cuh>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <thrust/device_vector.h>
+#include <thrust/reduce.h>
 
 #include <cstdint>
 
 const uint64_t blockdim = 1024;
-
-__global__ void print_array(float *input, int size)
-{
-    printf("MATRIX = [\n");
-    for (int i = 0; i < size; ++i)
-    {
-        printf("%f ", input[i]);
-    }
-    printf("]\n");
-}
 
 template <typename _Type> _Type host_reduction(_Type *input, uint64_t size)
 {
@@ -37,15 +29,49 @@ template <typename _Type> _Type host_openmp_reduction(_Type *input, uint64_t siz
     return output;
 }
 
-template <typename _Type> void run_cub_reduce(_Type *in, _Type *out, size_t size)
+template <typename _Type> float run_cub_reduce(_Type *output, _Type *input, uint64_t size)
 {
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
     size_t temp_storage_bytes = 0;
     void *temp_storage = nullptr;
     int init = 0;
-    cub::DeviceReduce::Reduce(temp_storage, temp_storage_bytes, in, out, size, cub::Sum(), init);
+    cub::DeviceReduce::Reduce(temp_storage, temp_storage_bytes, input, output, size, cub::Sum(), init);
     cudaMalloc(&temp_storage, temp_storage_bytes);
-    cub::DeviceReduce::Reduce(temp_storage, temp_storage_bytes, in, out, size, cub::Sum(), init);
-    cudaDeviceSynchronize();
+
+    cudaEventRecord(start);
+    cub::DeviceReduce::Reduce(temp_storage, temp_storage_bytes, input, output, size, cub::Sum(), init);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    cudaFree(temp_storage);
+
+    return milliseconds;
+}
+
+template <typename _Type> float run_thrust_reduce(_Type *output, _Type *input, uint64_t size)
+{
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    thrust::device_ptr<_Type> input_thrust_ptr = thrust::device_pointer_cast(input);
+    thrust::device_ptr<_Type> output_thrust_ptr = thrust::device_pointer_cast(output);
+
+    cudaEventRecord(start);
+    *output_thrust_ptr = thrust::reduce(input_thrust_ptr, input_thrust_ptr + size);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    return milliseconds;
 }
 
 template <typename _Type> __global__ void reduce_kernel1(_Type *output, _Type *input, uint64_t size)
@@ -65,36 +91,25 @@ template <typename _Type> __global__ void reduce_kernel2(_Type *output, _Type *i
         atomicAdd(output, input[i]);
 }
 
-template <typename _Type> __device__ void print(_Type arr, uint64_t size)
-{
-    printf("[ ");
-    for (int i = 0; i < size; ++i)
-        printf("%g ", arr[i]);
-    printf("]\n");
-}
-
 template <typename _Type> __global__ void reduce_kernel3(_Type *output, _Type *input, uint64_t size)
 {
     uint64_t segment = 2 * blockDim.x * blockIdx.x;
     uint64_t i = segment + 2 * threadIdx.x;
 
-    if (i < size)
+    for (uint64_t stride = 1; stride <= blockDim.x; stride *= 2)
     {
-        for (uint64_t stride = 1; stride <= blockDim.x; stride *= 2)
+        __syncthreads();
+
+        if (threadIdx.x % stride == 0)
         {
-            if (threadIdx.x % stride == 0)
-            {
+            if (i + stride < size && i < size)
                 input[i] += input[i + stride];
-            }
-            __syncthreads();
         }
+    }
 
-        if (i % segment == 0 && i > 0)
-        {
-            atomicAdd(&input[0], input[i]);
-        }
-
-        output[0] = input[0];
+    if (threadIdx.x == 0 && i < size)
+    {
+        atomicAdd(&output[0], input[i]);
     }
 }
 
@@ -103,24 +118,20 @@ template <typename _Type> __global__ void reduce_kernel4(_Type *output, _Type *i
     uint64_t segment = 2 * blockDim.x * blockIdx.x;
     uint64_t i = segment + threadIdx.x;
 
-    if (i < size)
+    for (uint64_t stride = blockDim.x; stride > 0; stride >>= 1)
     {
-        for (uint64_t stride = blockDim.x; stride > 0; stride /= 2)
+        if (threadIdx.x < stride && i < size && i + stride < size)
         {
-            if (threadIdx.x < stride)
-            {
-                input[i] += input[i + stride];
-            }
-
-            __syncthreads();
+            input[i] += input[i + stride];
         }
 
-        if (i % segment == 0 && i > 0)
-        {
-            atomicAdd(&input[0], input[i]);
-        }
+        __syncthreads();
     }
-    output[0] = input[0];
+
+    if (threadIdx.x == 0 && i < size)
+    {
+        atomicAdd(&output[0], input[i]);
+    }
 }
 
 template <typename _Type> __global__ void reduce_kernel5(_Type *output, _Type *input, uint64_t size)
@@ -146,7 +157,7 @@ template <typename _Type> __global__ void reduce_kernel5(_Type *output, _Type *i
 
     for (uint64_t stride = blockDim.x / 2; stride > 0; stride /= 2)
     {
-        if (threadIdx.x < stride)
+        if (threadIdx.x < stride && threadIdx.x + stride < blockdim)
         {
             input_s[threadIdx.x] += input_s[threadIdx.x + stride];
         }
@@ -155,39 +166,47 @@ template <typename _Type> __global__ void reduce_kernel5(_Type *output, _Type *i
 
     if (threadIdx.x == 0)
     {
-        output[0] += input_s[threadIdx.x];
+        atomicAdd(&output[0], input_s[threadIdx.x]);
     }
 }
 
-template <typename _Type, uint64_t course_factor>
-__global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size)
+template <typename _Type>
+__global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint64_t coarse_factor)
 {
-    unsigned int segment = course_factor * 2 * blockDim.x * blockIdx.x;
+    unsigned int segment = coarse_factor * 2 * blockDim.x * blockIdx.x;
     unsigned int i = segment + threadIdx.x;
+    const unsigned int BLOCK_DIM = blockdim >> 1;
 
-    __shared__ _Type input_s[blockdim];
-    _Type sum = 0.0f;
-    for (unsigned int c = 0; c < course_factor * 2; ++c)
+    __shared__ _Type input_s[BLOCK_DIM];
+
+    _Type sum;
+
+    if (i < size)
+        sum = input[i];
+    else
+        sum = 0;
+
+    for (unsigned int tile = 1; tile < coarse_factor * 2; ++tile)
     {
-        if (i + c * blockDim.x < size)
+        if (i + tile * BLOCK_DIM < size)
         {
-            sum += input[i + c * blockDim.x];
+            sum += input[i + tile * BLOCK_DIM];
         }
     }
-    input_s[threadIdx.x] = sum;
-    __syncthreads();
+    if (threadIdx.x < BLOCK_DIM)
+        input_s[threadIdx.x] = sum;
 
-    for (unsigned int stride = blockDim.x / 2; stride > 0; stride /= 2)
+    for (unsigned int stride = (blockDim.x >> 1); stride >= 1; stride >>= 1)
     {
-        if (threadIdx.x < stride)
+        __syncthreads();
+        if (threadIdx.x < stride && threadIdx.x + stride < BLOCK_DIM)
         {
             input_s[threadIdx.x] += input_s[threadIdx.x + stride];
         }
-        __syncthreads();
     }
 
     if (threadIdx.x == 0)
     {
-        output[0] += input_s[0];
+        atomicAdd(&output[0], input_s[0]);
     }
 }

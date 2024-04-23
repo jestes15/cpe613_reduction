@@ -1,11 +1,8 @@
-ada:
+ADA:
 	nvcc -O3 main.cu -o main -arch=sm_89 -Xcompiler '-fopenmp'
 
-xavier:
-	/usr/local/cuda-11/bin/nvcc -g  main.cu -o main -arch=sm_72 -Xcompiler '-fopenmp'
-
-a100:
-	nvcc -g  main.cu -o main -arch=sm_80 -Xcompiler '-fopenmp'
+A100:
+	nvcc -O3 main.cu -o main_a100 -arch=sm_80 -Xcompiler '-fopenmp'
 
 H100:
-	nvcc -g  main.cu -o main -arch=sm_90 -Xcompiler '-fopenmp'
+	nvcc -O3 main.cu -o main_h100 -arch=sm_90 -Xcompiler '-fopenmp'

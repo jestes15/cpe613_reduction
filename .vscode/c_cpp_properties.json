@@ -1,0 +1,15 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${workspaceFolder}/**",
+				"/opt/intel/oneapi/2024.1/include"
+			],
+			"defines": [],
+			"compilerPath": "/usr/local/bin/clang",
+			"intelliSenseMode": "linux-clang-x64"
+		}
+	],
+	"version": 4
+}

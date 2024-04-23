@@ -89,6 +89,9 @@
 		"typeinfo": "cpp",
 		"__verbose_abort": "cpp",
 		"execution": "cpp",
-		"locale": "cpp"
+		"locale": "cpp",
+		"__locale": "cpp",
+		"queue": "cpp",
+		"stack": "cpp"
 	}
 }
