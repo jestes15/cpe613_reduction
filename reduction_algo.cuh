@@ -11,10 +11,9 @@
 template <typename _Type> _Type host_reduction(_Type *input, uint64_t size)
 {
     _Type output = 0;
-
-    for (uint64_t i = 0; i < size; ++i)
+    for (uint64_t i = 0; i < size; i += 2)
     {
-        output += input[i];
+        output += (input[i] + input[i + 1]);
     }
 
     return output;
@@ -79,12 +78,13 @@ template <typename _Type> float run_thrust_reduce(_Type *output, _Type *input, u
 template <typename _Type> __global__ void reduce_kernel1(_Type *output, _Type *input, uint64_t size)
 {
     _Type sum = 0;
-    for (uint64_t i = 0; i < size; ++i)
-        sum += input[i];
+    for (uint64_t i = 0; i < size; i += 2)
+        sum += (input[i] + input[i + 1]);
 
     *output = sum;
 }
 
+// Fix floating point issue in this kernel
 template <typename _Type> __global__ void reduce_kernel2(_Type *output, _Type *input, uint64_t size)
 {
     uint64_t i = blockIdx.x * blockDim.x + threadIdx.x;
