@@ -5,8 +5,73 @@
 #include <iomanip>
 #include <iostream>
 
-int main()
+template <typename datatype> void print_data(const char *kernel_name, datatype result, float time)
 {
+    if constexpr (std::is_same<float, datatype>::value)
+        printf("%s: %f, %f ms\n", kernel_name, result, time);
+    else if constexpr (std::is_same<double, datatype>::value)
+        printf("%s: %f, %f ms\n", kernel_name, result, time);
+
+    else if constexpr (std::is_same<uint8_t, datatype>::value)
+        printf("%s: %hhu, %f ms\n", kernel_name, result, time);
+    else if constexpr (std::is_same<int8_t, datatype>::value)
+        printf("%s: %hhd, %f ms\n", kernel_name, result, time);
+
+    else if constexpr (std::is_same<uint16_t, datatype>::value)
+        printf("%s: %hu, %f ms\n", kernel_name, result, time);
+    else if constexpr (std::is_same<int16_t, datatype>::value)
+        printf("%s: %hd, %f ms\n", kernel_name, result, time);
+
+    else if constexpr (std::is_same<uint32_t, datatype>::value)
+        printf("%s: %u, %f ms\n", kernel_name, result, time);
+    else if constexpr (std::is_same<int32_t, datatype>::value)
+        printf("%s: %d, %f ms\n", kernel_name, result, time);
+
+    else if constexpr (std::is_same<uint64_t, datatype>::value)
+        printf("%s: %lu, %f ms\n", kernel_name, result, time);
+    else if constexpr (std::is_same<int64_t, datatype>::value)
+        printf("%s: %ld, %f ms\n", kernel_name, result, time);
+}
+
+template <typename datatype> int get_max_test_shift()
+{
+    if constexpr (std::is_same<float, datatype>::value)
+        return 20;
+    else if constexpr (std::is_same<double, datatype>::value)
+        return 27;
+    else if constexpr (std::is_same<uint8_t, datatype>::value)
+        return 8;
+    else if constexpr (std::is_same<int8_t, datatype>::value)
+        return 7;
+    else if constexpr (std::is_same<uint16_t, datatype>::value)
+        return 16;
+    else if constexpr (std::is_same<int16_t, datatype>::value)
+        return 15;
+    else if constexpr (std::is_same<uint32_t, datatype>::value)
+        return 32;
+    else if constexpr (std::is_same<int32_t, datatype>::value)
+        return 30;
+    else if constexpr (std::is_same<uint64_t, datatype>::value)
+        return 30;
+    else if constexpr (std::is_same<int64_t, datatype>::value)
+        return 30;
+}
+
+template <typename datatype> void run_tests()
+{
+    if constexpr (std::is_same<float, datatype>::value)
+        printf("SINGLE PRECISION TESTING\n");
+    else if constexpr (std::is_same<double, datatype>::value)
+        printf("DOUBLE PRECISION TESTING\n");
+    else if constexpr (std::is_same<uint8_t, datatype>::value || std::is_same<int8_t, datatype>::value)
+        printf("8-BIT PRECISION TESTING\n");
+    else if constexpr (std::is_same<uint16_t, datatype>::value || std::is_same<int16_t, datatype>::value)
+        printf("16-BIT PRECISION TESTING\n");
+    else if constexpr (std::is_same<uint32_t, datatype>::value || std::is_same<int32_t, datatype>::value)
+        printf("32-BIT PRECISION TESTING\n");
+    else if constexpr (std::is_same<uint64_t, datatype>::value || std::is_same<int64_t, datatype>::value)
+        printf("64-BIT PRECISION TESTING\n");
+
     float milliseconds = 0;
 
     int block_kernel2, grid_kernel2;
@@ -15,10 +80,20 @@ int main()
     int block_kernel5, grid_kernel5;
     int block_kernel6, grid_kernel6;
 
-    for (int i = 26; i < 27; ++i)
+	std::vector<std::pair<uint64_t, float>> time_kernel1;
+    std::vector<std::pair<uint64_t, float>> time_kernel2;
+    std::vector<std::pair<uint64_t, float>> time_kernel3;
+    std::vector<std::pair<uint64_t, float>> time_kernel4;
+    std::vector<std::pair<uint64_t, float>> time_kernel5;
+    std::vector<std::pair<uint64_t, float>> time_kernel6;
+    std::vector<std::pair<uint64_t, float>> not_threaded;
+    std::vector<std::pair<uint64_t, float>> threaded;
+    std::vector<std::pair<uint64_t, float>> cub;
+    std::vector<std::pair<uint64_t, float>> thrust;
+
+    for (int i = 0; i < get_max_test_shift<datatype>(); ++i)
     {
         uint64_t size = (uint64_t)2 << (uint64_t)i;
-        using datatype = double;
 
         cudaEvent_t start, stop;
         cudaEventCreate(&start);
@@ -26,25 +101,26 @@ int main()
 
         datatype *input_array = (datatype *)malloc(sizeof(datatype) * size);
         datatype zero = 0;
-        std::fill(input_array, input_array + size, 1.0);
+        std::fill(input_array, input_array + size, 1.5);
 
         std::cout << "-------------------------------------------------------------------\n";
-        printf("Input Size: %lu (%g GB)\n", size, (size * sizeof(datatype)) / (float)1e9);
+        printf("Input Size: %lu (%f GB)\n", size, (size * sizeof(datatype)) / (float)1e9);
 
         const auto start_no_threading = std::chrono::steady_clock::now();
         datatype output_no_threading = host_reduction(input_array, size);
         const auto end_no_threading = std::chrono::steady_clock::now();
         const std::chrono::duration<double> diff_no_threading = end_no_threading - start_no_threading;
-        printf("NO THREAD: %g, %f ms\n", output_no_threading,
-               std::chrono::duration_cast<std::chrono::nanoseconds>(diff_no_threading).count() /
-                   static_cast<float>(1e6));
+        print_data("NO THREAD", output_no_threading,
+                   std::chrono::duration_cast<std::chrono::nanoseconds>(diff_no_threading).count() /
+                       static_cast<float>(1e6));
 
         const auto start_threading = std::chrono::steady_clock::now();
         datatype output_threading = host_openmp_reduction(input_array, size);
         const auto end_threading = std::chrono::steady_clock::now();
         const std::chrono::duration<double> diff_threading = end_threading - start_threading;
-        printf("THREAD: %g, %f ms\n", output_threading,
-               std::chrono::duration_cast<std::chrono::nanoseconds>(diff_threading).count() / static_cast<float>(1e6));
+        print_data("THREAD", output_threading,
+                   std::chrono::duration_cast<std::chrono::nanoseconds>(diff_threading).count() /
+                       static_cast<float>(1e6));
 
         datatype *d_input, *d_output_kernel1, *d_output_kernel2, *d_output_kernel3, *d_output_kernel4,
             *d_output_kernel5, *d_output_kernel6, *d_cub_output, *d_thrust_output;
@@ -77,7 +153,7 @@ int main()
         cudaEventSynchronize(stop);
         cudaMemcpy(&output_kernel1, d_output_kernel1, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("KERNEL 1: %g, %f ms\n", output_kernel1, milliseconds);
+        print_data("KERNEL 1", output_kernel1, milliseconds);
 
         block_kernel2 = 1024;
         grid_kernel2 = (size + block_kernel2 - 1) / block_kernel2;
@@ -89,7 +165,7 @@ int main()
         cudaMemcpy(&output_kernel2, d_output_kernel2, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("KERNEL 2: %g, %f ms\n", output_kernel2, milliseconds);
+        print_data("KERNEL 2", output_kernel2, milliseconds);
 
         block_kernel3 = 1024;
         grid_kernel3 = (size + block_kernel3 - 1) / block_kernel3;
@@ -101,7 +177,7 @@ int main()
         cudaMemcpy(&output_kernel3, d_output_kernel3, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("KERNEL 3: %g, %f ms\n", output_kernel3, milliseconds);
+        print_data("KERNEL 3", output_kernel3, milliseconds);
 
         block_kernel4 = 1024;
         grid_kernel4 = (size + block_kernel4 - 1) / block_kernel4;
@@ -113,7 +189,7 @@ int main()
         cudaMemcpy(&output_kernel4, d_output_kernel4, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("KERNEL 4: %g, %f ms\n", output_kernel4, milliseconds);
+        print_data("KERNEL 4", output_kernel4, milliseconds);
 
         block_kernel5 = 1024;
         grid_kernel5 = (size + block_kernel5 - 1) / block_kernel5;
@@ -125,12 +201,12 @@ int main()
         cudaMemcpy(&output_kernel5, d_output_kernel5, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
         cudaEventElapsedTime(&milliseconds, start, stop);
-        printf("KERNEL 5: %g, %f ms\n", output_kernel5, milliseconds);
+        print_data("KERNEL 5", output_kernel5, milliseconds);
 
         block_kernel6 = 1024;
         grid_kernel6 = (size + block_kernel6 - 1) / block_kernel6;
 
-        for (int course_factor = 1; course_factor < 64; ++course_factor)
+        for (int course_factor = 1; course_factor < 17; ++course_factor)
         {
             cudaEventRecord(start);
             reduce_kernel6<datatype><<<grid_kernel6, block_kernel6>>>(d_output_kernel6, d_input, size, course_factor);
@@ -140,17 +216,17 @@ int main()
             cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
             cudaEventElapsedTime(&milliseconds, start, stop);
             cudaMemcpy(d_output_kernel6, &zero, sizeof(datatype), cudaMemcpyHostToDevice);
-            printf("KERNEL 6: %d, %g, %f ms\n", course_factor, output_kernel6, milliseconds);
+            print_data("KERNEL 6", output_kernel6, milliseconds);
         }
 
         auto cub_time = run_cub_reduce(d_cub_output, d_input, size);
         cudaMemcpy(&cub_output, d_cub_output, sizeof(datatype), cudaMemcpyDeviceToHost);
         cudaMemcpy(d_input, input_array, sizeof(datatype) * size, cudaMemcpyHostToDevice);
-        printf("CUB::REDUCE: %g, %f ms\n", cub_output, cub_time);
+        print_data("CUB::REDUCE", cub_output, cub_time);
 
         auto thrust_time = run_thrust_reduce(d_thrust_output, d_input, size);
         cudaMemcpy(&thrust_output, d_thrust_output, sizeof(datatype), cudaMemcpyDeviceToHost);
-        printf("THRUST::REDUCE: %g, %f ms\n", thrust_output, thrust_time);
+        print_data("THRUST::REDUCE", thrust_output, thrust_time);
 
         free(input_array);
 
@@ -167,4 +243,10 @@ int main()
 
         printf("\n\n\n");
     }
+}
+
+int main()
+{
+    run_tests<float>();
+    run_tests<double>();
 }

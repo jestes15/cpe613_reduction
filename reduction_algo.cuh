@@ -13,7 +13,9 @@ template <typename _Type> _Type host_reduction(_Type *input, uint64_t size)
     _Type output = 0;
 
     for (uint64_t i = 0; i < size; ++i)
+    {
         output += input[i];
+    }
 
     return output;
 }
@@ -185,8 +187,6 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
     else
         sum = 0;
 
-    __syncthreads();
-
     for (unsigned int tile = 1; tile < coarse_factor * 2; ++tile)
     {
         if (i + tile * BLOCK_DIM < size)
@@ -195,7 +195,6 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
         }
     }
 
-    __syncthreads();
     if (threadIdx.x < BLOCK_DIM)
         input_s[threadIdx.x] = sum;
 
@@ -208,10 +207,8 @@ __global__ void reduce_kernel6(_Type *output, _Type *input, uint64_t size, uint6
         }
     }
 
-    __syncthreads();
-
     if (threadIdx.x == 0)
     {
-        atomicAdd(&output[0], input_s[0]);
+        atomicAdd(&output[0], input_s[threadIdx.x]);
     }
 }
